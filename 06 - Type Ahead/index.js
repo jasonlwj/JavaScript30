@@ -2,16 +2,17 @@ const endpoint = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb
 const cities = []
 const searchBar = document.querySelector('.search')
 const suggestions = document.querySelector('.suggestions')
-
-fetch(endpoint)
-	.then(response => response.json())
-	.then(data => cities.push(...data))
+let userLocation = null
 
 const findMatches = (query, cities) => (
-	cities.filter(place => {
-		const regex = new RegExp(query, 'gi')
-		return place.city.match(regex) || place.state.match(regex)
-	})
+	cities
+		.filter(place => {
+			const regex = new RegExp(query, 'gi')
+			return place.city.match(regex) || place.state.match(regex)
+		})
+		.sort((first, next) => {
+			return first.latitude - next.latitude
+		})
 )
 
 const formatLargeNumber = number => (
@@ -33,6 +34,19 @@ const updateResults = event => {
 		`
 	}).join('')
 	suggestions.innerHTML = newHTML
+
+	console.log(userLocation)
 }
+
+const setUserLocation = ({ coords }) => {
+	console.log('Setting user location as', coords)
+	userLocation = coords
+}
+
+navigator.geolocation.getCurrentPosition(setUserLocation)
+
+fetch(endpoint)
+	.then(response => response.json())
+	.then(data => cities.push(...data))
 
 searchBar.addEventListener('input', updateResults)
