@@ -2,6 +2,7 @@ const checkboxes = document.querySelectorAll('.item input[type="checkbox"]')
 let lastChecked = null
 
 const handleCheck = event => {
+	console.log(this)
 	let inBetween = false
 	
 	if (event.target.checked && event.shiftKey) {
